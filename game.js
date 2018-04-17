@@ -4,4 +4,8 @@ import './js/libs/symbol'
 import Main from './js/main'
 
 
-new Main()
+var game=new Main()
+wx.onShow(()=>{
+  //game.restart()
+  console.log('restart')
+})

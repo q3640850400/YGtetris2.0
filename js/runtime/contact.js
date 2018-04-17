@@ -8,7 +8,7 @@ var Room = new Map()
 var flueid = parseInt(Math.random() * 1000000000).toString()
 export default class contact {
   constructor(){
-
+    //this.state='wait'
   }
   send(outmsg) {
     var msg = {
@@ -39,7 +39,7 @@ export default class contact {
   link() {
     wx.connectSocket({
       url: 'wss://luif.yxsvip.cn',
-      header: { flueid: flueid, gamers: 2 }
+      header: { flueid: flueid, gamers: 1 }
     })
     wx.onSocketOpen(() => {
       console.log('已连接')
@@ -67,13 +67,13 @@ export default class contact {
         }
         case 'pool': {
           tetris_20 = immsg.data
-          state = 'pool'
+          this.state = 'pool'
           var outmsg = { code: 'ready1' }
           this.send(outmsg)
           break
         }
         case 'start': {
-          state = 'start'
+          this.state = 'start'
           break
         }
         case 'update': {

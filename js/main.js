@@ -28,30 +28,38 @@ for(let i=0;i<21;i++){
  * 俄罗斯方块OISZLJT
  */
 var tetris = [[0x0660], [0x2222, 0xf00], [0xc600, 0x2640], [0x6c00, 0x4620], [0x4460, 0x2e0, 0x6220, 0x740], [0x2260, 0xe20, 0x6440, 0x4700], [0x2620, 0x720, 0x2320, 0x2700]]
-var dia, pos, bak, run,sd,cot,rst;
+var dia, pos, bak, run,sd,cot,rst,gst;
 /**
  * 游戏主函数
  */
 export default class Main {
   constructor() {
     this.restart()
-
   }
-  start() {
-
-    this.start1()
-  }
-  start1(){
+  newatetris(){
     cot = ~~(Math.random() * 7)
     dia = tetris[cot];
     pos = { fk: [], y: 0, x: 4, s: ~~(Math.random() * 4) };
     bak = { fk: pos.fk.slice(0), y: pos.y, x: pos.x, s: pos.s }
-    if (run) { window.clearInterval(run); }
-    if (sd) { window.clearInterval(sd); }
-    if (rst) { window.clearInterval(rst); }
-    run = window.setInterval(this.down.bind(this), 2000);
-    sd = window.setInterval(this.straightdown.bind(this), 100);
     this.rotate(0);
+  }
+  start0() {
+    this.contact.link()
+    gst=window.setInterval(this.start1.bind(this),500)
+    //this.start1()
+  }
+  start1(){
+    if(this.contact.state==='start'){
+      this.newatetris()
+      if (run) { window.clearInterval(run); }
+      run = window.setInterval(this.down.bind(this), 2000);
+      if (sd) { window.clearInterval(sd); }
+      sd = window.setInterval(this.straightdown.bind(this), 100);
+      if (rst) { window.clearInterval(rst); }
+
+      this.contact.state = 'wait'
+      window.clearInterval(gst)
+    }
   }
   iscan() {
     for (var i = 0; i < 4; i++)
@@ -79,7 +87,7 @@ export default class Main {
           }
       }
       if (map[0] != 0x801) return this.over();
-      this.start();
+      this.newatetris();
     }
     this.update(0);
   }
@@ -118,7 +126,7 @@ export default class Main {
         && x <= area.endX
         && y >= area.startY
         && y <= area.endY) {
-        this.start();
+        this.start0();
       }
       
 
