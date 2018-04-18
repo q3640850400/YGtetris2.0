@@ -1,13 +1,20 @@
 "use strict"
-var ws;
-var state = 'wait';
-var tetris_20 = null;
+//var ws;
+//var state = 'wait';
+//var tetris_20 = null;
 var socketState = false;
 var emptyseat = new Set([1, 2, 3])
-var Room = new Map()
-var flueid = parseInt(Math.random() * 1000000000).toString()
+//var Room = new Map()
+var map = new Array(21)
+for (let i = 0; i < 20; i++) {
+  map[i] = 0x801
+}
+map[20] = 0xfff
+//var flueid = parseInt(Math.random() * 1000000000).toString()
 export default class contact {
-  constructor(){
+  constructor() {
+    this.Room = new Map()
+    this.flueid = parseInt(Math.random() * 1000000000).toString()
     //this.state='wait'
   }
   send(outmsg) {
@@ -20,7 +27,7 @@ export default class contact {
     switch (st) {
       case 'state': { return state }
       case 'tetrris_20': { return tetris_20 }
-      case 'Room': { return Room }
+      case 'Room': { return this.Room }
       default: { return }
     }
   }
@@ -29,7 +36,7 @@ export default class contact {
   }
   update(map) {
     if (socketState === true) {
-      var outmsg = { code: 'update', data: { flueid: flueid, map: map } }
+      var outmsg = { code: 'update', data: { flueid: this.flueid, map: map } }
       this.send(outmsg)
     }
   }
@@ -39,7 +46,7 @@ export default class contact {
   link() {
     wx.connectSocket({
       url: 'wss://luif.yxsvip.cn',
-      header: { flueid: flueid, gamers: 1 }
+      header: { flueid: this.flueid, gamers: 2 }
     })
     wx.onSocketOpen(() => {
       console.log('已连接')
@@ -56,17 +63,17 @@ export default class contact {
           var player = {
             flueid: immsg.data,//玩家号
             seat: null,
-            map: null,//当前的积木池
+            map: map,//当前的积木池
             score: null,//分数
             state: 'wait'//状态
           }
           emptyseat.forEach((key) => { player.seat = key; emptyseat.delete(key); return; })
-          Room.set(player.flueid, player)
+          this.Room.set(player.flueid, player)
           player = null
           break
         }
         case 'pool': {
-          tetris_20 = immsg.data
+          this.tetris_20 = immsg.data
           this.state = 'pool'
           var outmsg = { code: 'ready1' }
           this.send(outmsg)
@@ -77,8 +84,10 @@ export default class contact {
           break
         }
         case 'update': {
-          Room[immsg.data.flueid].map = immsg.data.map
-          Room[immsg.data.flueid].state = 'update'
+          console.log(immsg.data.flueid)
+          console.log(this.Room)
+          this.Room.get(immsg.data.flueid).map = immsg.data.map
+          this.Room.get(immsg.data.flueid).state = 'update'
           break
         }
         default: { break }
@@ -93,5 +102,5 @@ export default class contact {
   join() {
 
   }
-  
+
 }

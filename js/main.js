@@ -88,6 +88,7 @@ export default class Main {
       }
       if (map[0] != 0x801) return this.over();
       this.newatetris();
+      this.contact.update(map);
     }
     this.update(0);
   }
@@ -250,7 +251,10 @@ export default class Main {
     this.gameinfo.renderGameBtn(ctx)
     this.gameinfo.renderTetris(ctx,cot,bak)
     this.gameinfo.renderTetrispool(ctx,map,color)
-    this.gameinfo.renderOthers(ctx, map, color)
+    this.contact.Room.forEach((val,key)=>{
+       this.gameinfo.renderOthers(ctx, val.map, color)
+     })
+   //this.gameinfo.renderOthers(ctx, this.contact.map, color)
   }
 
 
